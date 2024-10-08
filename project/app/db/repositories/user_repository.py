@@ -3,7 +3,7 @@ from sqlalchemy.orm import  joinedload
 from sqlalchemy.orm import Session
 import logging
 
-from app.models.user import User, UserToken
+from app.db.models.user import User, UserToken
 
 
 def get_user_by_email(email: str, session):

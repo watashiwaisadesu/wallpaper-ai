@@ -5,12 +5,12 @@ from datetime import datetime, timedelta
 import logging
 import httpx
 
-from app.models.user import User, UserToken
-from app.config import security
-from app.config.settings import settings_env
+from app.db.models.user import User, UserToken
+from app.core import security
+from app.core.config import settings_env
 from app.auth.services import email
 from app.utils import email_context, string
-from app.repositories import user_repository
+from app.db.repositories import user_repository
 
 
 settings = settings_env
@@ -174,7 +174,7 @@ async def _get_user(email: str, session) -> User:
     user = await user_repository.load_user(email, session)
     if not user:
         logging.warning(f"User not found: {email}")
-        raise HTTPException(status_code=404, detail="This link is not valid")
+        raise HTTPException(status_code=404, detail="User not found: {email}")
     return user
  
     

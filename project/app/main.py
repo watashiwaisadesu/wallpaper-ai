@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
 from app.auth.routes import user
-from app.config.database import engine,Base
-from app.config.settings import settings_env
+from app.core.database import engine,Base
+from app.core.config import settings_env
 
 settings= settings_env
 

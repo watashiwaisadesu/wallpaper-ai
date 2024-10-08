@@ -2,7 +2,7 @@ from fastapi import BackgroundTasks
 from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
 from typing import List
 
-from app.config.settings import settings_env
+from app.core.config import settings_env
 
 
 settings = settings_env

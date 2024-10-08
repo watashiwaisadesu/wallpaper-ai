@@ -4,12 +4,12 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer,OAu
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from app.config.database import get_db
+from app.core.database import get_db
 from app.responses.user import UserResponse, LoginResponse
 from app.auth.schemas.user import RegisterUserRequest, VerifyUserRequest, LoginRequest, EmailRequest, ResetRequest
 from app.auth.services import user
-from app.config.settings import settings_env
-from app.config import security
+from app.core.config import settings_env
+from app.core import security
 
 settings = settings_env
 templates = Jinja2Templates(directory="app/templates")

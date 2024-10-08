@@ -7,9 +7,9 @@ import logging
 import jwt
 import base64
 
-from app.models.user import UserToken
-from app.config.settings import settings_env
-from app.config.database import get_db
+from app.db.models.user import UserToken
+from app.core.config import settings_env
+from app.core.database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 settings= settings_env
