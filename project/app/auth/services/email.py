@@ -1,4 +1,5 @@
 from fastapi import BackgroundTasks
+import logging
 
 from app.core.config import settings_env
 from app.db.models.user import User
@@ -6,11 +7,14 @@ from app.utils import email_context
 from app.core.email import send_email
 from app.core.security import hash_password
 
-settings=settings_env
+# Initialize logger
+logger = logging.getLogger(__name__)
+
+settings = settings_env
 SERVER = f"http://{settings.SERVER_HOST}:{settings.SERVER_PORT}/users"
 
-
 async def send_account_verification_email(user: User, background_tasks: BackgroundTasks):
+    logger.info(f"Sending account verification email to: {user.email}")
     string_context = user.get_context_string(context=email_context.USER_VERIFY_ACCOUNT)
     token = hash_password(string_context)
     
@@ -27,13 +31,15 @@ async def send_account_verification_email(user: User, background_tasks: Backgrou
     )
     
     await send_email(
-        recipients = [user.email],
-        subject = subject,
-        context = data,
+        recipients=[user.email],
+        subject=subject,
+        context=data,
         background_tasks=background_tasks
     )
-    
+    logger.info(f"Account verification email sent to: {user.email}")
+
 async def send_account_activation_confirmation_email(user: User, background_tasks: BackgroundTasks):
+    logger.info(f"Sending account activation confirmation email to: {user.email}")
     subject = f"Welcome to {settings.APP_NAME}!"
     data = (
         f"Dear {user.name},\n\n"
@@ -46,13 +52,15 @@ async def send_account_activation_confirmation_email(user: User, background_task
     )
     
     await send_email(
-        recipients = [user.email],
-        subject = subject,
-        context = data,
+        recipients=[user.email],
+        subject=subject,
+        context=data,
         background_tasks=background_tasks
     )
-    
+    logger.info(f"Account activation confirmation email sent to: {user.email}")
+
 async def send_password_reset_email(user: User, background_tasks: BackgroundTasks):
+    logger.info(f"Sending password reset email to: {user.email}")
     string_context = user.get_context_string(context=email_context.FORGOT_PASSWORD)
     token = hash_password(string_context)
     reset_url = f"{SERVER}/reset-password?token={token}&email={user.email}"
@@ -66,13 +74,11 @@ async def send_password_reset_email(user: User, background_tasks: BackgroundTask
         "Thank you,\n"
         f"The {settings.APP_NAME} Team"
     )
+    
     await send_email(
         recipients=[user.email],
         subject=subject,
         context=data,
         background_tasks=background_tasks
     )
-    
-    
-    
-  
+    logger.info(f"Password reset email sent to: {user.email}")
