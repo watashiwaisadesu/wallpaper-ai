@@ -1,9 +1,9 @@
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import create_engine
 
-from .settings import get_settings
+from app.config.settings import settings_env
 
-settings=get_settings()
+settings=settings_env
 
 DB_URL = f"postgresql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 

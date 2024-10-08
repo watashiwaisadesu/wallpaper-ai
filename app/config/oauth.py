@@ -3,7 +3,7 @@ from starlette.config import Config
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import JSONResponse
 
-from app.config.settings import get_settings
+from app.config.settings import settings_env
 
-settings = get_settings()
+settings = settings_env
 

@@ -1,12 +1,12 @@
 from fastapi import BackgroundTasks
 
-from app.config.settings import get_settings
+from app.config.settings import settings_env
 from app.models.user import User
 from app.utils import email_context
 from app.config.email import send_email
 from app.config.security import hash_password
 
-settings=get_settings()
+settings=settings_env
 SERVER = f"http://{settings.SERVER_HOST}:{settings.SERVER_PORT}/users"
 
 

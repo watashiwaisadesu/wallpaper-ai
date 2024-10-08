@@ -2,10 +2,10 @@ from fastapi import BackgroundTasks
 from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
 from typing import List
 
-from app.config.settings import get_settings
+from app.config.settings import settings_env
 
 
-settings = get_settings()
+settings = settings_env
 
 conf = ConnectionConfig(
     MAIL_USERNAME="islambek040508@gmail.com",

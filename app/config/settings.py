@@ -1,5 +1,4 @@
 from pydantic_settings import BaseSettings
-from functools import lru_cache
 
 class Settings(BaseSettings):
     SERVER_HOST: str
@@ -21,11 +20,14 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_REDIRECT_URI: str
     GOOGLE_CLIENT_SECRET: str
+    
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
+    GITHUB_REDIRECT_URI: str
 
     class Config:
-        env_file = ".env"
+        env_file = "..env"
         
-        
-@lru_cache()
-def get_settings():
-    return Settings()
+
+settings_env = Settings()
+

@@ -1,14 +1,16 @@
 from datetime import datetime
-from sqlalchemy.orm import Session, joinedload
-from app.models.user import User, UserToken
+from sqlalchemy.orm import  joinedload
+from sqlalchemy.orm import Session
 import logging
 
-
-async def get_user_by_email(email: str, session):
-    return await session.query(User).filter_by(email=email).first()
+from app.models.user import User, UserToken
 
 
-def save_user(user, session):
+def get_user_by_email(email: str, session):
+    return session.query(User).filter_by(email=email).first()
+
+
+def save_user(user, session: Session):
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -30,3 +32,6 @@ async def load_user(email: str, db):
         logging.info(f"User Not Found, Email: {email}")
         user = None
     return user
+
+
+
