@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 import logging
 
-from app.auth.routes import user
-from app.core.database import engine, Base
-from app.core.config import settings_env
+from app.auth.routes import auth_router
+from app.core import engine, Base, settings_env
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -27,9 +26,7 @@ def create_application():
     # Include routers from the user module
     try:
         logger.info("Including user routers...")
-        application.include_router(user.user_router)
-        application.include_router(user.guest_router)
-        application.include_router(user.oauth_router)
+        application.include_router(auth_router)
         logger.info("User routers included successfully.")
     except Exception as route_inclusion_error:
         logger.error(f"Error including user routers: {str(route_inclusion_error)}")

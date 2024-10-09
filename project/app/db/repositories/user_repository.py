@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import joinedload, Session
 import logging
 
-from app.db.models.user import User, UserToken
+from app.db.models import User, UserToken
 
 # Initialize logger
 logger = logging.getLogger(__name__)
