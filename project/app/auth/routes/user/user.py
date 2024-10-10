@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.core import get_db, settings_env
 from app.responses import UserResponse
-from app.auth.schemas import RegisterUserRequest, VerifyUserRequest
+from app.schemas import RegisterUserRequest, VerifyUserRequest
 from app.auth.services import create_user_account_service, activate_user_account, get_current_user
 
 settings = settings_env

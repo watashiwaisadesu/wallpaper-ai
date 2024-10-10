@@ -17,15 +17,14 @@ def get_user_token_by_user_id(user_id, session):
     return session.query(UserToken).filter(UserToken.owner_id == user_id).first()
 
 def save(model, session: Session):
-    logger.debug(f"Saving user or userToken")
     try:
         session.add(model)
         session.commit()
         session.refresh(model)
-        logger.debug(f"User saved successfully.")
+        logger.debug(f"saved successfully.")
     except Exception as save_exc:
         session.rollback()
-        logger.error(f"Failed to save user, Error: {str(save_exc)}")
+        logger.error(f"Failed to save, Error: {str(save_exc)}")
         raise save_exc
     
 def delete(model, session: Session):
@@ -34,7 +33,7 @@ def delete(model, session: Session):
         session.commit()
     except Exception as e:
         session.rollback()
-        raise HTTPException(status_code=500, detail="Failed to delete user token.")
+        raise HTTPException(status_code=500, detail="Failed to delete.")
 
 async def load_user(email: str, db):
     try:

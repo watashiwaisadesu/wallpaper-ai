@@ -4,7 +4,6 @@ from sqlalchemy.orm import joinedload
 
 from app.db.models import User, UserToken
 from app.core import get_token_payload, str_decode, str_encode, generate_token, settings_env, verify_password
-from app.auth.services import email
 from app.utils import  unique_string
 from app.db.repositories import save, get_user_token_by_keys, delete
 

@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     GITHUB_REDIRECT_URI: str
 
     class Config:
-        env_file = "..env"
+        env_file = ".env"
         
 
 settings_env = Settings()

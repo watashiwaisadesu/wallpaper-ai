@@ -4,7 +4,7 @@ import logging
 import httpx
 
 from app.db.models import User
-from app.core import settings_env,verify_password, verify_password
+from app.core import settings_env, verify_password
 from app.db.repositories import save, get_user_by_email, delete, get_user_token_by_user_id
 from .user import fetch_user_info, _get_user,_validate_user_status
 from .token import _generate_tokens
@@ -59,12 +59,12 @@ async def get_login_token(data, session):
 
     if not verify_password(data.password, user.password):
         raise HTTPException(status_code=400, detail="Incorrect email or password.")
-    
-    user_token = get_user_token_by_user_id(user.id, session)
-    
-    if user_token:
-        delete(user_token, session) 
-    
+
+    # user_token = get_user_token_by_user_id(user.id, session)
+    #
+    # if user_token:
+    #     delete(user_token, session)
+
     _validate_user_status(user)
 
     return _generate_tokens(user, session)

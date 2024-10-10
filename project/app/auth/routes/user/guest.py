@@ -1,10 +1,9 @@
-import logging
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, BackgroundTasks, Depends, status, Header
 
 from app.core import get_db
 from app.responses import LoginResponse
-from app.auth.schemas import LoginRequest, EmailRequest, ResetRequest
+from app.schemas import LoginRequest, EmailRequest, ResetRequest
 from app.auth.services import get_login_token,get_refresh_token,email_forgot_password_link,reset_user_password
 
 

@@ -17,7 +17,8 @@ class User(Base):
     is_active = Column(Boolean, default=False)
     verified_at = Column(DateTime, nullable=True,default=None)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
-    
+
+    rooms = relationship("Room", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
     
     def get_context_string(self, context: str):

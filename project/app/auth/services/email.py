@@ -1,7 +1,7 @@
 from fastapi import BackgroundTasks
 
 from app.db.models import User
-from app.utils import USER_VERIFY_ACCOUNT,FORGOT_PASSWORD
+from app.utils import USER_VERIFY_ACCOUNT, FORGOT_PASSWORD
 from app.core import send_email, hash_password, settings_env
 
 
