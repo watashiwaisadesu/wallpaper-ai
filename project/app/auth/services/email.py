@@ -1,19 +1,15 @@
 from fastapi import BackgroundTasks
-import logging
 
-from app.db.models import User,UserToken
+from app.db.models import User
 from app.utils import USER_VERIFY_ACCOUNT,FORGOT_PASSWORD
 from app.core import send_email, hash_password, settings_env
 
-# Initialize logger
-logger = logging.getLogger(__name__)
 
 settings = settings_env
-SERVER = f"{settings.SERVER_HOST}:{settings.SERVER_PORT}/users"
+SERVER = f"{settings.SERVER_HOST}/users"
 
 
 async def send_account_verification_email(user: User, background_tasks: BackgroundTasks):
-    logger.info(f"Sending account verification email to: {user.email}")
     string_context = user.get_context_string(context=USER_VERIFY_ACCOUNT)
     token = hash_password(string_context)
     
@@ -35,11 +31,9 @@ async def send_account_verification_email(user: User, background_tasks: Backgrou
         context=data,
         background_tasks=background_tasks
     )
-    logger.info(f"Account verification email sent to: {user.email}")
 
 
 async def send_account_activation_confirmation_email(user: User, background_tasks: BackgroundTasks):
-    logger.info(f"Sending account activation confirmation email to: {user.email}")
     subject = f"Welcome to {settings.APP_NAME}!"
     data = (
         f"Dear {user.name},\n\n"
@@ -57,11 +51,9 @@ async def send_account_activation_confirmation_email(user: User, background_task
         context=data,
         background_tasks=background_tasks
     )
-    logger.info(f"Account activation confirmation email sent to: {user.email}")
 
 
 async def send_password_reset_email(user: User, background_tasks: BackgroundTasks):
-    logger.info(f"Sending password reset email to: {user.email}")
     string_context = user.get_context_string(context=FORGOT_PASSWORD)
     token = hash_password(string_context)
     reset_url = f"{SERVER}/reset-password?token={token}&email={user.email}"
@@ -82,4 +74,4 @@ async def send_password_reset_email(user: User, background_tasks: BackgroundTask
         context=data,
         background_tasks=background_tasks
     )
-    logger.info(f"Password reset email sent to: {user.email}")
+

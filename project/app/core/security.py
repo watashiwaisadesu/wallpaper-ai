@@ -1,7 +1,6 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from password_validator import PasswordValidator
-
 import logging
 import jwt
 import base64

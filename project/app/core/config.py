@@ -2,7 +2,6 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     SERVER_HOST: str
-    SERVER_PORT: int
     APP_NAME: str
     
     DB_NAME: str
@@ -10,6 +9,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_HOST: str
     DB_PORT: str
+    # DB_URL :  str = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
     
     REFRESH_TOKEN_EXPIRE_MINUTES: int
     ACCESS_TOKEN_EXPIRE_MINUTES: int

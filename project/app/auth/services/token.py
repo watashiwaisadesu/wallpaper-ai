@@ -1,21 +1,17 @@
 from fastapi import HTTPException
 from datetime import datetime, timedelta
 from sqlalchemy.orm import joinedload
-import logging
 
 from app.db.models import User, UserToken
 from app.core import get_token_payload, str_decode, str_encode, generate_token, settings_env, verify_password
 from app.auth.services import email
 from app.utils import  unique_string
-from app.db.repositories import save_user, get_user_token_by_keys
+from app.db.repositories import save, get_user_token_by_keys, delete
 
 settings = settings_env
 
-logger = logging.getLogger(__name__)
-
 
 def _create_access_token(user: User, access_key: str, user_token: UserToken) -> str:
-    logger.info(f"Создание access токена для пользователя с ID: {user.id}")
     
     at_payload = {
         "sub": str_encode(str(user.id)),
@@ -26,12 +22,10 @@ def _create_access_token(user: User, access_key: str, user_token: UserToken) -> 
 
     at_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token = generate_token(at_payload, settings.JWT_SECRET, settings.JWT_ALGORITHM, at_expires)
-    logger.info(f"Access токен создан для пользователя с ID: {user.id}")
     return token
 
 
 def _create_refresh_token(user: User, refresh_key: str, access_key: str) -> str:
-    logger.info(f"Создание refresh токена для пользователя с ID: {user.id}")
     
     rt_payload = {
         "sub": str_encode(str(user.id)),
@@ -40,16 +34,13 @@ def _create_refresh_token(user: User, refresh_key: str, access_key: str) -> str:
     }    
     rt_expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     token = generate_token(rt_payload, settings.SECRET_KEY, settings.JWT_ALGORITHM, rt_expires)
-    logger.info(f"Refresh токен создан для пользователя с ID: {user.id}")
     return token
 
 
 async def get_refresh_token(refresh_token, session):
-    logger.info(f"Обновление токена для пользователя с refresh_token: {refresh_token[:10]}...")
 
     token_payload = get_token_payload(refresh_token, settings.SECRET_KEY, settings.JWT_ALGORITHM)
     if not token_payload:
-        logger.error("Невалидный запрос на обновление токена")
         raise HTTPException(status_code=400, detail="Invalid Request.")
     
     user_token = get_user_token_by_keys(
@@ -60,17 +51,14 @@ async def get_refresh_token(refresh_token, session):
     )
     
     if not user_token:
-        logger.error("Невалидный запрос на обновление токена, токен не найден")
         raise HTTPException(status_code=400, detail="Invalid Request.")
     
-    save_user(user_token, session)
-    logger.info(f"Токен пользователя обновлен для пользователя с ID: {user_token.owner_id}")
-
+    delete(user_token, session)
+    
     return _generate_tokens(user_token.user, session)
 
 
 def _generate_tokens(user: User, session) -> dict:
-    logger.info(f"Генерация токенов для пользователя с ID: {user.id}")
 
     refresh_key = unique_string(100)
     access_key = unique_string(50)
@@ -83,8 +71,7 @@ def _generate_tokens(user: User, session) -> dict:
         expires_at=datetime.utcnow() + rt_expires
     )
     
-    save_user(user_token, session)
-    logger.info(f"Токены сгенерированы для пользователя с ID: {user.id}")
+    save(user_token, session)
 
     access_token = _create_access_token(user, access_key, user_token)
     refresh_token = _create_refresh_token(user, refresh_key, access_key)
@@ -97,13 +84,11 @@ def _generate_tokens(user: User, session) -> dict:
 
 
 async def get_token_user(token: str, db):
-    logger.debug(f"Getting user from token: {token}")
     payload = get_token_payload(token, settings.JWT_SECRET, settings.JWT_ALGORITHM)
     if payload:
         user_token_id = str_decode(payload.get('rt_ID'))
         user_id = str_decode(payload.get('sub'))
         access_key = payload.get('a_key')
-        logger.debug(f"Decoded payload: user_token_id={user_token_id}, user_id={user_id}")
         user_token = db.query(UserToken).options(joinedload(UserToken.user)).filter(
             UserToken.access_key == access_key,
             UserToken.id == user_token_id,
@@ -111,22 +96,17 @@ async def get_token_user(token: str, db):
             UserToken.expires_at > datetime.utcnow()
         ).first()
         if user_token:
-            logger.debug(f"User token found for user ID: {user_token.user.id}")
             return user_token.user
-        logger.debug("No valid user token found.")
     return None
 
 
 async def _verify_user_token(user: User, token: str, email_context: str):
-    logger.info(f"Проверка токена для пользователя с ID: {user.id}")
     
     user_token = user.get_context_string(context=email_context)
 
     # Проверка токена
     token_valid = verify_password(user_token, token)
     if not token_valid:
-        logger.warning("Токен недействителен или истек.")
         raise HTTPException(status_code=404, detail="This link is expired or not valid!")
     
-    logger.info(f"Токен успешно проверен для пользователя с ID: {user.id}")
     

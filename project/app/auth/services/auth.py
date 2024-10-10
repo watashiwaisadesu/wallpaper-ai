@@ -5,7 +5,7 @@ import httpx
 
 from app.db.models import User
 from app.core import settings_env,verify_password, verify_password
-from app.db.repositories import save_user, get_user_by_email
+from app.db.repositories import save, get_user_by_email, delete, get_user_token_by_user_id
 from .user import fetch_user_info, _get_user,_validate_user_status
 from .token import _generate_tokens
 
@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 settings = settings_env
 
 async def get_auth_callback(code: str, provider: str, session):
-    logger.info(f"Авторизация через {provider} с кодом: {code}")
     
     if provider == "github":
         token_url = "https://github.com/login/oauth/access_token"
@@ -38,10 +37,8 @@ async def get_auth_callback(code: str, provider: str, session):
         token = response_json.get('access_token')
         
     if not token:
-        logger.error(f"Не удалось получить токен доступа от {provider}")
-        return {"error": "Failed to retrieve access token."}
+        raise HTTPException(status_code=400,detail="Failed to retrieve access token.")
     
-    logger.info(f"Токен доступа получен для {provider}")
     
     name, email = await fetch_user_info(provider, token)
     user =get_user_by_email(email, session)
@@ -53,21 +50,21 @@ async def get_auth_callback(code: str, provider: str, session):
             is_active=True,
             verified_at=datetime.utcnow()
         )
-        save_user(user, session)
-        logger.info(f"Создан новый пользователь через {provider}: {email}")
+        save(user, session)
     
     return _generate_tokens(user, session)
 
 async def get_login_token(data, session):
-    logger.info(f"Попытка входа для пользователя с email: {data.email}")
-    
     user = await _get_user(data.email, session)
 
     if not verify_password(data.password, user.password):
-        logger.warning(f"Неудачная попытка входа: неверный пароль для пользователя {data.email}")
         raise HTTPException(status_code=400, detail="Incorrect email or password.")
     
+    user_token = get_user_token_by_user_id(user.id, session)
+    
+    if user_token:
+        delete(user_token, session) 
+    
     _validate_user_status(user)
-    logger.info(f"Пользователь {data.email} успешно вошел в систему")
 
     return _generate_tokens(user, session)

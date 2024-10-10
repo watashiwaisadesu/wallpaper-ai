@@ -25,8 +25,7 @@ conf = ConnectionConfig(
 fm = FastMail(conf)
 
 async def send_email(recipients: List[str], subject: str, context: dict, background_tasks: BackgroundTasks):
-    logger.info(f"Preparing to send email to: {recipients} with subject: '{subject}'")
-    
+  
     message = MessageSchema(
         subject=subject,
         recipients=recipients,
@@ -35,4 +34,3 @@ async def send_email(recipients: List[str], subject: str, context: dict, backgro
     )
     
     background_tasks.add_task(fm.send_message, message)
-    logger.info("Email sending task added to background tasks.")

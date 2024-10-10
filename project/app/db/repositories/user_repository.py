@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from datetime import datetime
 from sqlalchemy.orm import joinedload, Session
 import logging
@@ -12,32 +13,30 @@ def get_user_by_email(email: str, session):
     logger.debug(f"Fetching user by email: {email}")
     return session.query(User).filter_by(email=email).first()
 
+def get_user_token_by_user_id(user_id, session):
+    return session.query(UserToken).filter(UserToken.owner_id == user_id).first()
 
-def save_user(user, session: Session):
+def save(model, session: Session):
     logger.debug(f"Saving user or userToken")
     try:
-        session.add(user)
+        session.add(model)
         session.commit()
-        session.refresh(user)
+        session.refresh(model)
         logger.debug(f"User saved successfully.")
     except Exception as save_exc:
         session.rollback()
         logger.error(f"Failed to save user, Error: {str(save_exc)}")
         raise save_exc
-
-
-def get_user_token_by_keys(refresh_key, access_key, user_id, session):
-    logger.debug(f"Fetching user token by keys for user ID: {user_id}")
-    return session.query(UserToken).options(joinedload(UserToken.user)).filter(
-        UserToken.refresh_key == refresh_key,
-        UserToken.access_key == access_key,
-        UserToken.owner_id == user_id,
-        UserToken.expires_at > datetime.utcnow()
-    ).first()
-
+    
+def delete(model, session: Session):
+    try:
+        session.delete(model)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail="Failed to delete user token.")
 
 async def load_user(email: str, db):
-    logger.debug(f"Loading user by email: {email}")
     try:
         user = db.query(User).filter(User.email == email).first()
         if user:
