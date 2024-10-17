@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str
     GOOGLE_CLIENT_SECRET: str
 
+    EXTERNAL_LIBRARY_LEVEL_LOG: str
+    LOG_LEVEL: str
     class Config:
         env_file = "dev.env"
 

@@ -74,6 +74,7 @@ async def reset_password(data: ResetRequest, session: AsyncSession = Depends(get
         logger.info(f"Пароль для пользователя с email {data.email} успешно обновлен.")
         return {"message": "Your password has been updated."}
     except HTTPException as e:
+        logger.error(f"HTTPException occurred: {e.detail}")
         raise e
     except Exception as e:
         raise HTTPException(
