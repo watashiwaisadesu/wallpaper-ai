@@ -11,23 +11,21 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "${DB_PORT}:5432"
-
-  migrate:
-    build: .
-    command: alembic upgrade head
-    depends_on:
-      - db
-    restart: "no"
+    command: -p ${DB_PORT}
 
   web:
-    image: isaogzzz/wallpaper-ai:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: fastapi_app
-    restart: always
     ports:
       - "${SERVER_PORT}:80"
+    volumes:
+      - ./:/usr/src/app
+    restart: always
     depends_on:
       - db
-      - migrate
+
 
 
 volumes:

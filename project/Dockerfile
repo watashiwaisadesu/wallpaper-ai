@@ -2,7 +2,7 @@
 FROM python:3.9
 
 # Устанавливаем рабочую директорию
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Копируем зависимости (например, requirements.txt)
 COPY requirements.txt .
@@ -13,5 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь код приложения
 COPY . .
 
-# Запуск миграции и приложения
-CMD ["bash", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 80"]
+CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]
+
+
+
+
