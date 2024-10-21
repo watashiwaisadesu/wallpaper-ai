@@ -48,8 +48,8 @@ app = create_application()
 async def startup_event():
     setup_logging()
     # Create tasks to run parsing in the background
-    # asyncio.create_task(run_parse('tiles'))
-    # asyncio.create_task(run_parse('wallpapers'))
+    asyncio.create_task(run_parse('tiles'))
+    asyncio.create_task(run_parse('wallpapers'))
 
 async def run_parse(item: str):
     async for session in get_db():
