@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     EXTERNAL_LIBRARY_LEVEL_LOG: str
     LOG_LEVEL: str
     class Config:
-        env_file = "dev.env"
+        env_file = ".env"
 
     @property
     def DB_URL_SYNC(self):
