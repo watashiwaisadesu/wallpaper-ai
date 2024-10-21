@@ -10,12 +10,13 @@ from app.core.database import Base
 from app.core.config import settings_env
 
 config = context.config
+config.set_main_option("sqlalchemy.url", settings_env.DB_URL_SYNC)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 print(settings_env.DB_URL_SYNC)
-config.set_main_option("sqlalchemy.url", settings_env.DB_URL_SYNC)
+
 
 target_metadata = Base.metadata
 
