@@ -13,9 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь код приложения
 COPY . .
 
-# Копируем .env файл, чтобы Alembic мог получить доступ к переменным окружения
-COPY .env .env
-
 # Выполняем миграцию базы данных
 RUN alembic upgrade head
 
