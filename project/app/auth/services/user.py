@@ -6,7 +6,7 @@ import httpx
 import logging
 
 from app.db.models import User
-from app.core import settings_env, hash_password, get_db, validate
+from app.core import settings_env, hash_password, get_async_db, validate
 from app.auth.services import email
 from app.utils import USER_VERIFY_ACCOUNT, FORGOT_PASSWORD
 from app.db.repositories import load_user, save, logout_user
@@ -121,7 +121,7 @@ async def reset_user_password(data, session):
         logger.info(f"Password successfully reset for user: {data.email}")
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_async_db)):
     logger.debug("Fetching current user from token.")
     user = await get_token_user(token=token, session=session)
     if user:

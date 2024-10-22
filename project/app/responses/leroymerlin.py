@@ -4,7 +4,8 @@ class LeroyMerlinResponse(BaseModel):
     url: str
     image_url: str
     name: str
-    price: str
+    price: float
+    price_type: str
 
     class Config:
         orm_mode = True

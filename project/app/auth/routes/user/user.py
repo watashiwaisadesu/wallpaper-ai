@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, BackgroundTasks, Depends, status, HTTPException
 import logging
 
-from app.core import get_db, settings_env
+from app.core import get_async_db, settings_env
 from app.responses import UserResponse
 from app.schemas import RegisterUserRequest, VerifyUserRequest
 from app.auth.services import create_user_service, activate_user_service, get_current_user, logout_user_service
@@ -20,7 +20,7 @@ user_router = APIRouter(
 async def create_user_account(
         data: RegisterUserRequest,
         backgroundTasks: BackgroundTasks,
-        session: AsyncSession = Depends(get_db)):
+        session: AsyncSession = Depends(get_async_db)):
     logger.debug("Attempting to create user account.")
     try:
         user_response = await create_user_service(data, backgroundTasks, session)
@@ -35,7 +35,7 @@ async def create_user_account(
 async def verify_user_account(
         token: str, email: str,
         backgroundTasks: BackgroundTasks,
-        session: AsyncSession = Depends(get_db)):
+        session: AsyncSession = Depends(get_async_db)):
 
     data = VerifyUserRequest(token=token, email=email)
     logger.debug(f"Verifying user account for email: {email}")
@@ -62,7 +62,7 @@ async def fetch_user(
 @user_router.post("/logout", status_code=status.HTTP_200_OK)
 async def logout(
         user=Depends(get_current_user),
-        session: AsyncSession = Depends(get_db)):
+        session: AsyncSession = Depends(get_async_db)):
     try:
         logger.info(f"User logged out successfully: {user.email}")
         return await logout_user_service(user, session)

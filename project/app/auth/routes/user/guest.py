@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, BackgroundTasks, Depends, status, Header, HTTPException
 import logging
 
-from app.core import get_db
+from app.core import get_async_db
 from app.responses import LoginResponse
 from app.schemas import LoginRequest, EmailRequest, ResetRequest
 from app.auth.services import get_login_token, get_refresh_token, forgot_password_email_link, reset_user_password
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @guest_router.post("/login", status_code=200, response_model=LoginResponse)
-async def user_login(data: LoginRequest, session: AsyncSession = Depends(get_db)):
+async def user_login(data: LoginRequest, session: AsyncSession = Depends(get_async_db)):
     try:
         logger.info(f"Попытка входа пользователя с email: {data.email}")
         token = await get_login_token(data, session)
@@ -33,7 +33,7 @@ async def user_login(data: LoginRequest, session: AsyncSession = Depends(get_db)
 
 # Обновление токена
 @guest_router.post("/refresh", status_code=status.HTTP_200_OK, response_model=LoginResponse)
-async def refresh_token(refresh_token: str = Header(...), session: AsyncSession = Depends(get_db)):
+async def refresh_token(refresh_token: str = Header(...), session: AsyncSession = Depends(get_async_db)):
     try:
         logger.info("Обновление токена.")
         new_token = await get_refresh_token(refresh_token, session)
@@ -50,7 +50,7 @@ async def refresh_token(refresh_token: str = Header(...), session: AsyncSession 
 
 # Сброс пароля
 @guest_router.post("/forgot-password", status_code=status.HTTP_200_OK)
-async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks, session: AsyncSession = Depends(get_db)):
+async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks, session: AsyncSession = Depends(get_async_db)):
     try:
         logger.info(f"Запрос на сброс пароля для email: {data.email}")
         await forgot_password_email_link(data, background_tasks, session)
@@ -67,7 +67,7 @@ async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks,
 
 # Обновление пароля
 @guest_router.put("/reset-password", status_code=status.HTTP_200_OK)
-async def reset_password(data: ResetRequest, session: AsyncSession = Depends(get_db)):
+async def reset_password(data: ResetRequest, session: AsyncSession = Depends(get_async_db)):
     try:
         logger.info(f"Обновление пароля для пользователя с email: {data.email}")
         await reset_user_password(data, session)

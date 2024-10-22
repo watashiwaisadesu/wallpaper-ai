@@ -2,14 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import logging
-import asyncio
+
 
 from app.auth.routes import auth_router
-from app.rooms.routes import room_router
-from app.utils.parsings.routes import parse_router
-from app.core import settings_env, get_db
+from app.rooms.routes import room_router, parse_router
+from app.core import settings_env
 from app.db.logging import setup_logging
-from app.utils.parsings.services import parse
 
 
 settings = settings_env
@@ -37,9 +35,9 @@ def create_application() -> FastAPI:
             "X-CSRF-Token"
         ],
     )
-    application.include_router(parse_router)
     application.include_router(auth_router)
     application.include_router(room_router)
+    application.include_router(parse_router)
     return application
 
 app = create_application()
@@ -47,13 +45,6 @@ app = create_application()
 @app.on_event("startup")
 async def startup_event():
     setup_logging()
-    # Create tasks to run parsing in the background
-    asyncio.create_task(run_parse('tiles'))
-    asyncio.create_task(run_parse('wallpapers'))
-
-async def run_parse(item: str):
-    async for session in get_db():
-        await parse(item, session)
 
 @app.get("/")
 async def root():
