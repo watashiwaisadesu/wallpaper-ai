@@ -38,7 +38,5 @@ class Settings(BaseSettings):
     def DB_URL_ASYNC(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-
-
 settings_env = Settings()
 
