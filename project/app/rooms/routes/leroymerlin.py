@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from app.auth.services import get_current_user
 from app.core import get_async_db
 from app.db.models import LeroyMerlin
 from app.responses import LeroyMerlinResponse
@@ -13,7 +15,7 @@ parse_router = APIRouter(
 
 
 @parse_router.get("/wallpapers/", response_model=List[LeroyMerlinResponse])
-async def get_wallpapers(page: int = 1, db: AsyncSession = Depends(get_async_db)):
+async def get_wallpapers(page: int = 1, db: AsyncSession = Depends(get_async_db), user = Depends(get_current_user)):
     page_size = 10
     skip = (page - 1) * page_size
 
@@ -28,7 +30,7 @@ async def get_wallpapers(page: int = 1, db: AsyncSession = Depends(get_async_db)
     return wallpapers
 
 @parse_router.get("/tiles/", response_model=List[LeroyMerlinResponse])
-async def get_tiles(page: int = 1, db: AsyncSession = Depends(get_async_db)):
+async def get_tiles(page: int = 1, db: AsyncSession = Depends(get_async_db), user = Depends(get_current_user)):
     page_size = 10
     skip = (page - 1) * page_size
 
