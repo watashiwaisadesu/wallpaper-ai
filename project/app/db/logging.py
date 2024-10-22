@@ -38,8 +38,7 @@ class SyncDatabaseHandler(logging.Handler):
 def setup_logging():
     db_handler = SyncDatabaseHandler()
     logging.getLogger().addHandler(db_handler)
-    # logging.getLogger().setLevel(logging.getLevelName(settings_env.LOG_LEVEL))
-    logging.getLogger().setLevel("INFO")
+    logging.getLogger().setLevel(logging.getLevelName(settings_env.LOG_LEVEL))
     logging.getLogger().info("Application started")
 
 
