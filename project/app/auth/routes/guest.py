@@ -3,8 +3,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, status, Header, HTTPExc
 import logging
 
 from app.core import get_async_db
-from app.responses import LoginResponse
-from app.schemas import LoginRequest, EmailRequest, ResetRequest
+from app.products.responses import LoginResponse
+from app.rooms.schemas import LoginRequest, EmailRequest, ResetRequest
 from app.auth.services import get_login_token, get_refresh_token, forgot_password_email_link, reset_user_password
 
 guest_router = APIRouter(

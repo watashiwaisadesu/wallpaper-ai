@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, status, HTTPException, UploadFile, File,
 from typing import List
 
 from app.core import get_async_db, settings_env
-from app.responses import RoomResponse
+from app.products.responses import RoomResponse
 from app.rooms.services import create_room_model, view_room_model
-from app.schemas import RoomCreateRequest
+from app.rooms.schemas import RoomCreateRequest
 from app.auth.services import get_current_user
 import logging
 

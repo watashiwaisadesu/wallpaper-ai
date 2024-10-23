@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import List
 import logging
 
-from app.schemas import RoomCreateRequest
+from app.rooms.schemas import RoomCreateRequest
 from app.db.models import Room, RoomImage
 from app.db.repositories import save, get_room_images, get_newest_room, get_room_by_id, count_user_rooms
 

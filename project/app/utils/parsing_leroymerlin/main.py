@@ -4,17 +4,25 @@ from app.utils.parsing_leroymerlin import run_parse
 
 app = FastAPI()
 
+
 @app.post("/scrape/{item}")
 async def scrape_item(item: str):
-    if item not in ['tiles', 'wallpapers']:
-        raise HTTPException(status_code=400, detail="Invalid item. Choose 'tiles' or 'wallpapers'.")
-
     try:
-        asyncio.create_task(run_parse(item))
+        # Create tasks
+        tasks = []
+
+        # Schedule tasks for each item type
+        for item_type in ["tiles", "wallpapers"]:
+            # Define an asynchronous task to run the parsing for each item type
+            async def task(item_type):
+                await run_parse(item_type)  # No need to pass the session here
+
+            tasks.append(task(item_type))
+
+        # Run all tasks concurrently
+        await asyncio.gather(*tasks)
         return {"message": f"Started scraping for {item}."}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)

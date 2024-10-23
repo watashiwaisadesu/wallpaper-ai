@@ -1,6 +1,7 @@
 import logging
-from bs4 import BeautifulSoup
 import re
+import asyncio
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -11,24 +12,27 @@ class ProductParser:
         self.product_type = item_is
         self.page_number = page_number
 
-    def parse_products(self) -> list:
-        """Extract product details from the page content."""
+    async def parse_products(self) -> list:
+        """Extract product details from the page content asynchronously."""
         catalog_items = self.soup.find_all('li', class_='catalog-lvl3-page__catalog-item')
 
         if not catalog_items:
-            logging.warning("No catalog_items found.")
+            logger.warning("No catalog_items found.")
             return []
 
         logger.info(f"Found {len(catalog_items)} catalog_item(s).")
 
-        products = []
-        for i, item in enumerate(catalog_items, start=1):
-            product_data = self._parse_product(item, i, len(catalog_items))
-            if product_data:
-                products.append(product_data)
-        return products
+        # Create a list of tasks for each product parsing
+        tasks = [self._parse_product(item, index + 1, len(catalog_items)) for index, item in enumerate(catalog_items)]
 
-    def _parse_product(self, item, index, total_items) -> dict:
+        # Gather the results of all tasks
+        products = await asyncio.gather(*tasks)
+        print(f"Products_length: {len(products)} ====={self.page_number}============={self.product_type}")
+
+        # Filter out None values from the results
+        return [product for product in products if product is not None]
+
+    async def _parse_product(self, item, index, total_items) -> dict:
         logger.info(f"Processing catalog_item {index}/{total_items}")
         tag_lookup = {
             'wallpapers': lambda: item.find('a', attrs={'data-slick-index': '1'}),
@@ -46,20 +50,24 @@ class ProductParser:
         product_name = item.find('a', class_='catalog__name').get_text(strip=True) if item.find('a',
                                                                                                 class_='catalog__name') else None
 
-        price_str = item.find('p', class_='catalog__price').get_text(strip=True).replace('\xa0', ' ') if item.find(
-            'p', class_='catalog__price') else None
+        price_str = item.find('p', class_='catalog__price').get_text(strip=True).replace('\xa0', ' ') if item.find('p',
+                                                                                                                   class_='catalog__price') else None
         logger.warning(f"price_value: {price_str}")
+
         # Use regex to extract the numeric part and the price type
         match = re.match(r'([\d\s,]+)(₸/.*)', price_str)
+        price_value = None
+        price_type = None
+
         if match:
-            price_value_str = match.group(1).replace(' ', '').replace(',','.')
+            price_value_str = match.group(1).replace(' ', '').replace(',', '.')
             price_value = float(price_value_str)
             price_type = match.group(2)
 
-            print(f"Price: {price_value}")
-            print(f"Price Type: {price_type}")
+            logger.info(f"Price: {price_value}")
+            logger.info(f"Price Type: {price_type}")
         else:
-            print("Could not parse the price value.")
+            logger.warning("Could not parse the price value.")
 
         return {
             "name": product_name,
@@ -69,4 +77,3 @@ class ProductParser:
             "price_type": price_type,
             "product_type": self.product_type,
         }
-
