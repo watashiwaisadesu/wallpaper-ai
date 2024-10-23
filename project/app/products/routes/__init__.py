@@ -1,0 +1,1 @@
+from .leroymerlin import product_router

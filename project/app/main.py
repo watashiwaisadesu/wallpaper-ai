@@ -7,6 +7,7 @@ from app.auth.routes import auth_router
 from app.rooms.routes import room_router
 from app.core import settings_env
 from app.db.logging import setup_logging
+from app.products.routes import product_router
 
 
 settings = settings_env
@@ -36,6 +37,7 @@ def create_application() -> FastAPI:
     )
     application.include_router(auth_router)
     application.include_router(room_router)
+    application.include_router(product_router)
     return application
 
 app = create_application()
