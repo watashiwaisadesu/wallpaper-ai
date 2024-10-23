@@ -3,8 +3,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, status, HTTPException
 import logging
 
 from app.core import get_async_db, settings_env
-from app.products.responses import UserResponse
-from app.rooms.schemas import RegisterUserRequest, VerifyUserRequest
+from app.auth.responses import UserResponse
+from app.auth.schemas import RegisterUserRequest, VerifyUserRequest
 from app.auth.services import create_user_service, activate_user_service, get_current_user, logout_user_service
 
 settings = settings_env

@@ -3,9 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import logging
 
-
 from app.auth.routes import auth_router
-from app.rooms.routes import room_router, parse_router
+from app.rooms.routes import room_router
 from app.core import settings_env
 from app.db.logging import setup_logging
 
@@ -37,7 +36,6 @@ def create_application() -> FastAPI:
     )
     application.include_router(auth_router)
     application.include_router(room_router)
-    application.include_router(parse_router)
     return application
 
 app = create_application()
