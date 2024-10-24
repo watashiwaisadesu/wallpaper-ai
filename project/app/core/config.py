@@ -33,11 +33,18 @@ class Settings(BaseSettings):
 
     @property
     def DB_URL_SYNC(self):
-        return f"postgresql://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        return "postgresql://wallpaper_ai_test_user:KspFatDAimrUojuSKUS5keRDvdL4SvjF@dpg-cs3a3prtq21c73bkr5a0-a.singapore-postgres.render.com/wallpaper_ai_test"
 
     @property
-    def DB_URL_ASYNC(self) -> str:
-        return f"postgresql+asyncpg://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    def DB_URL_ASYNC(self):
+        return "postgresql+asyncpg://wallpaper_ai_test_user:KspFatDAimrUojuSKUS5keRDvdL4SvjF@dpg-cs3a3prtq21c73bkr5a0-a.singapore-postgres.render.com/wallpaper_ai_test"
+    # @property
+    # def DB_URL_SYNC(self):
+    #     return f"postgresql://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    #
+    # @property
+    # def DB_URL_ASYNC(self) -> str:
+    #     return f"postgresql+asyncpg://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 
 settings_env = Settings()

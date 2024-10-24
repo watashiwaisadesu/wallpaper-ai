@@ -20,20 +20,18 @@ class ProductParser:
             logger.warning("No catalog_items found.")
             return []
 
-        logger.info(f"Found {len(catalog_items)} catalog_item(s).")
+        logger.info(f"Found {len(catalog_items)} catalog_item(s). {self.page_number}===={self.product_type}")
 
         # Create a list of tasks for each product parsing
         tasks = [self._parse_product(item, index + 1, len(catalog_items)) for index, item in enumerate(catalog_items)]
 
         # Gather the results of all tasks
         products = await asyncio.gather(*tasks)
-        print(f"Products_length: {len(products)} ====={self.page_number}============={self.product_type}")
 
         # Filter out None values from the results
         return [product for product in products if product is not None]
 
     async def _parse_product(self, item, index, total_items) -> dict:
-        logger.info(f"Processing catalog_item {index}/{total_items}")
         tag_lookup = {
             'wallpapers': lambda: item.find('a', attrs={'data-slick-index': '1'}),
             'tiles': lambda: item.find('a'),
@@ -52,7 +50,7 @@ class ProductParser:
 
         price_str = item.find('p', class_='catalog__price').get_text(strip=True).replace('\xa0', ' ') if item.find('p',
                                                                                                                    class_='catalog__price') else None
-        logger.warning(f"price_value: {price_str}")
+
 
         # Use regex to extract the numeric part and the price type
         match = re.match(r'([\d\s,]+)(₸/.*)', price_str)
@@ -64,8 +62,6 @@ class ProductParser:
             price_value = float(price_value_str)
             price_type = match.group(2)
 
-            logger.info(f"Price: {price_value}")
-            logger.info(f"Price Type: {price_type}")
         else:
             logger.warning("Could not parse the price value.")
 

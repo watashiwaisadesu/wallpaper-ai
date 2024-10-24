@@ -12,8 +12,6 @@ from app.core.config import settings_env
 config = context.config
 config.set_main_option("sqlalchemy.url", settings_env.DB_URL_SYNC)
 
-# config.set_main_option("sqlalchemy.url", "postgresql://wallpaper_ai_test_user:KspFatDAimrUojuSKUS5keRDvdL4SvjF@dpg-cs3a3prtq21c73bkr5a0-a.singapore-postgres.render.com/wallpaper_ai_test")
-
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
