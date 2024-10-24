@@ -58,6 +58,7 @@ async def view_room_model(user, session, id: int = None):
 
         images_data = await get_room_images(session, room.uid)  # Ensure this function is async
         room_parameters = {
+            "id": room.id,
             "width": room.width,
             "height": room.height,
             "length": room.length,
