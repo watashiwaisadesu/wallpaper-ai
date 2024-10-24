@@ -40,7 +40,7 @@ async def create_room(
 async def room_view_newest(session: AsyncSession = Depends(get_async_db), current_user=Depends(get_current_user)):
     try:
         room = await view_room_model(id=0, session=session, user=current_user)
-        logger.info(f"Viewed newest room for user ID: {current_user.id}. Room ID: {room.id}")
+        logger.info(f"Viewed newest room for user ID: {current_user.id}.")
         return room
     except Exception as e:
         logger.error(f"Error viewing newest room for user ID: {current_user.id}. Error: {e}")
