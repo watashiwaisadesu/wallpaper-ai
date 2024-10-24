@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 origins = [
     "https://ai-wallpapers-kz.netlify.app",
     "https://wallpaper-ai-3m94.onrender.com",
-    "https://redirect-frontend.netlify.app"
+    "https://redirect-frontend.netlify.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 def create_application() -> FastAPI:
     application = FastAPI()
